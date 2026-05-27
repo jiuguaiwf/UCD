@@ -8,6 +8,10 @@
 > KDD 2026  
 > *Equal contribution
 
+<p align="center">
+  <img src="assets/ucd_main_figure.png" alt="UCD main figure" width="900">
+</p>
+
 This repository is the **code release** for **Uncertainty-Calibrated Diffusion for Reliable 3D Molecular Graph Generation**. We study how epistemic uncertainty in the denoiser interacts with diffusion-time noise during reverse sampling, show that this causes systematic variance inflation, and propose **UCD** to calibrate reverse diffusion for more reliable 3D molecule generation.
 
 The release contains two code paths:
@@ -72,22 +76,18 @@ The main paper insight is **variance inflation**: epistemic uncertainty in the d
 At an ideal reverse step, the kernel is
 
 $$
-K_t(\mathbf{z}_{t-1}\mid \mathbf{z}_t)
-=
-\mathcal{N}\!\bigl(\mathbf{z}_{t-1};\, f_t(\mathbf{z}_t),\, \sigma_t^2 I \bigr).
+K_t(z_{t-1} \mid z_t) = \mathcal{N}(z_{t-1}; f_t(z_t), \sigma_t^2 I)
 $$
 
 If the denoiser carries epistemic uncertainty with induced variance term $\eta_t^2$, the effective reverse kernel becomes
 
 $$
-\tilde K_t(\mathbf{z}_{t-1}\mid \mathbf{z}_t)
-=
-\mathcal{N}\!\bigl(\mathbf{z}_{t-1};\, f_t(\mathbf{z}_t),\, \tilde{\sigma}_t^2 I \bigr),
-\qquad
-\tilde{\sigma}_t^2 := \sigma_t^2 + \eta_t^2.
+K_t^{unc}(z_{t-1} \mid z_t) = \mathcal{N}(z_{t-1}; f_t(z_t), \tilde{\sigma}_t^2 I),
+\quad
+\tilde{\sigma}_t^2 = \sigma_t^2 + \eta_t^2
 $$
 
-So the issue is not only noisy mean prediction; the **reverse variance itself is inflated** from $\sigma_t^2$ to $\tilde{\sigma}_t^2$. UCD compensates for this by estimating uncertainty online and calibrating the reverse-time noise accordingly. In the EDM branch, this uncertainty estimate is obtained with a **last-layer Laplace approximation**.
+So the issue is not only noisy mean prediction; the **reverse variance itself is inflated** from `sigma_t^2` to `sigma_t^2 + eta_t^2`. UCD compensates for this by estimating uncertainty online and calibrating the reverse-time noise accordingly. In the EDM branch, this uncertainty estimate is obtained with a **last-layer Laplace approximation**.
 
 ## Running UCD
 
