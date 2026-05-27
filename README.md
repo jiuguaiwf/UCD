@@ -87,7 +87,7 @@ K_t^{unc}(z_{t-1} \mid z_t) = \mathcal{N}(z_{t-1}; f_t(z_t), \tilde{\sigma}_t^2 
 \tilde{\sigma}_t^2 = \sigma_t^2 + \eta_t^2
 $$
 
-So the issue is not only noisy mean prediction; the **reverse variance itself is inflated** from `sigma_t^2` to `sigma_t^2 + eta_t^2`. UCD compensates for this by estimating uncertainty online and calibrating the reverse-time noise accordingly. In the EDM branch, this uncertainty estimate is obtained with a **last-layer Laplace approximation**.
+So the issue is not only noisy mean prediction; the **reverse variance itself is inflated** from `sigma_t^2` to `sigma_t^2 + eta_t^2`. UCD compensates for this by estimating uncertainty online and calibrating the reverse-time noise accordingly. In the EDM branch, the main uncertainty estimate is based on dropout; we also include a last-layer Laplace approximation as an ablation.
 
 ## Running UCD
 
@@ -114,7 +114,20 @@ python main_qm9.py \
   --ema_decay 0.9999
 ```
 
-Evaluate with UCD using the **last-layer Laplace approximation** for epistemic uncertainty:
+Evaluate with UCD using dropout-based epistemic uncertainty:
+
+```bash
+python eval_analyze-uncertainty.py \
+  --model_path outputs/edm_qm9_unc \
+  --n_samples 10000 \
+  --variance_cal_times 20 \
+  --dynamic_weights 1 \
+  --u_max 0.00037 \
+  --uncertainty_method dropout \
+  --egnn_variant dropout
+```
+
+For the last-layer Laplace ablation:
 
 ```bash
 python eval_analyze-uncertainty.py \
